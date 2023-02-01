@@ -3,7 +3,6 @@ package homework_10.ticket;
 import homework_10.hibernate.HibernateUtil;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
-import org.hibernate.query.Query;
 
 import java.sql.SQLException;
 import java.util.List;
@@ -22,19 +21,20 @@ public class TicketCrudService implements ITicketService{
 
     @Override
     public Ticket read(long id) throws SQLException {
-        if (findId(id)){
 
-            try(Session session = HibernateUtil.getInstance().getSessionFactory().openSession()) {
-                return session.get(Ticket.class, id);
-            }
-        } else {
-            throw new SQLException("No found ticket for this id = "+id);
+        Ticket ticket;
+        try(Session session = HibernateUtil.getInstance().getSessionFactory().openSession()) {
+            ticket = session.get(Ticket.class, id);
         }
+        if (ticket == null){
+            throw new SQLException("No found ticket for this id = " + id);
+        }
+        return ticket;
     }
 
     @Override
     public void update(Ticket ticket) throws SQLException {
-        if(findId(ticket.getId())){
+        if(isEntityExist(ticket.getId())){
             try(Session session = HibernateUtil.getInstance().getSessionFactory().openSession()) {
 
                 Transaction transaction = session.beginTransaction();
@@ -49,14 +49,12 @@ public class TicketCrudService implements ITicketService{
 
     @Override
     public void delete(long id) throws SQLException {
-        if(findId(id)){
+        if(isEntityExist(id)){
 
-            Ticket ticket = new Ticket();
-            ticket.setId(id);
             try(Session session = HibernateUtil.getInstance().getSessionFactory().openSession()) {
 
                 Transaction transaction = session.beginTransaction();
-                session.delete(ticket);
+                session.detach(session.get(Ticket.class,id));
                 transaction.commit();
                 System.out.println("Ticket for this id = " + id+" is delete!");
             }
@@ -70,23 +68,17 @@ public class TicketCrudService implements ITicketService{
         session.close();
         return tickets;
     }
-    private static boolean findId(long id){
+    private static boolean isEntityExist(long id){
         Ticket ticket;
         try(Session session = HibernateUtil.getInstance().getSessionFactory().openSession()) {
 
-            Query<Ticket> query = session.createQuery(
-                    "from Ticket WHERE id = :id",
-                    Ticket.class
-            );
-            query.setParameter("id", id);
-
-            ticket = query.stream().findFirst().orElse(new Ticket());
-            if (ticket.getId() == 0) {
-                throw new SQLException("No found ticket for this id = " + id);
-            }
-            return true;
-        } catch (SQLException e){
-            return false;
+            ticket = session.get(Ticket.class,id);
         }
+        if (ticket == null){
+            return false;
+        } else {
+            return true;
+        }
+
     }
 }

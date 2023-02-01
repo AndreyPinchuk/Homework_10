@@ -1,7 +1,10 @@
 package homework_10.planet;
 
+import homework_10.ticket.Ticket;
 import jakarta.persistence.*;
 import lombok.Data;
+
+import java.util.List;
 
 @Table(name = "planet")
 @Entity
@@ -12,6 +15,12 @@ public class Planet {
     private String id;
     @Column(length = 500)
     private String name;
+
+    @OneToMany(mappedBy = "from_planet_id")
+    private List<Ticket> tickets_from_planet;
+
+    @OneToMany(mappedBy = "to_planet_id")
+    private List<Ticket> tickets_to_planet;
 
     public Planet() {
     }

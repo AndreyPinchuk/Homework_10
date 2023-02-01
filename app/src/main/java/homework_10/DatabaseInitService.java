@@ -5,10 +5,10 @@ import org.flywaydb.core.Flyway;
 
 
 public class DatabaseInitService {
-    public void initDb(HibernateUtil util){
+    public void initDb(){
         Flyway flyway = Flyway
                 .configure()
-                .dataSource(util.getSessionFactory().getProperties().get("hibernate.connection.url").toString()
+                .dataSource(HibernateUtil.getInstance().getSessionFactory().getProperties().get("hibernate.connection.url").toString()
                         ,null
                         ,null)
                 .load();

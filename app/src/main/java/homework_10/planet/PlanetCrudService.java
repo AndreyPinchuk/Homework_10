@@ -3,7 +3,6 @@ package homework_10.planet;
 import homework_10.hibernate.HibernateUtil;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
-import org.hibernate.query.Query;
 
 import java.sql.SQLException;
 import java.util.List;
@@ -11,7 +10,7 @@ import java.util.List;
 public class PlanetCrudService implements IPlanetService{
     @Override
     public void create(Planet planet) throws SQLException {
-        if(findId(planet.getId())){
+        if(isEntityExist(planet.getId())){
             System.out.println("ID = "+planet.getId()+" is already present in the database");
         } else {
 
@@ -28,18 +27,20 @@ public class PlanetCrudService implements IPlanetService{
 
     @Override
     public Planet read(String id) throws SQLException {
-        if(findId(id)){
-            try(Session session = HibernateUtil.getInstance().getSessionFactory().openSession()) {
-                return session.get(Planet.class, id);
-            }
-        } else {
-            throw new SQLException("No found planet for this id = "+id);
+
+        Planet planet;
+        try(Session session = HibernateUtil.getInstance().getSessionFactory().openSession()) {
+            planet = session.get(Planet.class, id);
         }
+        if (planet == null){
+            throw new SQLException("No found planet for this id = " + id);
+        }
+        return planet;
     }
 
     @Override
     public void update(Planet planet) throws SQLException {
-        if(findId(planet.getId())){
+        if(isEntityExist(planet.getId())){
 
             try(Session session = HibernateUtil.getInstance().getSessionFactory().openSession()) {
 
@@ -55,14 +56,12 @@ public class PlanetCrudService implements IPlanetService{
 
     @Override
     public void delete(String id) throws SQLException {
-        if(findId(id)){
+        if(isEntityExist(id)){
 
-            Planet planet = new Planet();
-            planet.setId(id);
             try(Session session = HibernateUtil.getInstance().getSessionFactory().openSession()) {
 
                 Transaction transaction = session.beginTransaction();
-                session.delete(planet);
+                session.delete(session.get(Planet.class, id));
                 transaction.commit();
                 System.out.println("Planet for this id = " + id+" is delete!");
             }
@@ -76,23 +75,17 @@ public class PlanetCrudService implements IPlanetService{
         session.close();
         return planets;
     }
-    private static boolean findId(String id){
+    private static boolean isEntityExist(String id){
         Planet planet;
         try(Session session = HibernateUtil.getInstance().getSessionFactory().openSession()) {
 
-            Query<Planet> query = session.createQuery(
-                    "from Planet WHERE id = :id",
-                    Planet.class
-            );
-            query.setParameter("id", id);
-
-            planet = query.stream().findFirst().orElse(new Planet());
-            if (planet.getName() == null) {
-                throw new SQLException("No found planet for this id = " + id);
-            }
-            return true;
-        } catch (SQLException e){
-            return false;
+            planet = session.get(Planet.class, id);
         }
+        if (planet == null){
+            return false;
+        } else {
+            return true;
+        }
+
     }
 }

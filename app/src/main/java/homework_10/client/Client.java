@@ -1,7 +1,10 @@
 package homework_10.client;
 
+import homework_10.ticket.Ticket;
 import jakarta.persistence.*;
 import lombok.Data;
+
+import java.util.List;
 
 @Table(name = "client")
 @Entity
@@ -12,6 +15,9 @@ public class Client {
     private long id;
     @Column(length = 200)
     private String name;
+
+    @OneToMany(mappedBy = "client_id")
+    private List<Ticket> tickets;
 
     public Client() {
     }
