@@ -16,10 +16,10 @@ public class Planet {
     @Column(length = 500)
     private String name;
 
-    @OneToMany(mappedBy = "from_planet_id")
+    @OneToMany(mappedBy = "from_planet")
     private List<Ticket> tickets_from_planet;
 
-    @OneToMany(mappedBy = "to_planet_id")
+    @OneToMany(mappedBy = "to_planet")
     private List<Ticket> tickets_to_planet;
 
     public Planet() {

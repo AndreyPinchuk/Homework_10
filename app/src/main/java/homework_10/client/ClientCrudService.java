@@ -6,7 +6,6 @@ import org.hibernate.Transaction;
 
 import java.sql.SQLException;
 import java.util.List;
-import java.util.Scanner;
 
 public class ClientCrudService implements IClientService{
     @Override
@@ -32,27 +31,6 @@ public class ClientCrudService implements IClientService{
         return client;
 
     }
-    public Client readForTicket(long id) {
-        Client client;
-        try(Session session = HibernateUtil.getInstance().getSessionFactory().openSession()) {
-            client = session.get(Client.class, id);
-        }
-        if (client == null){
-            System.out.println("No found client for this id = "+id);
-            System.out.println("Please create new client");
-            Scanner sc = new Scanner(System.in);
-            String name = sc.nextLine();
-            client = new Client(name);
-            sc.close();
-            try(Session session = HibernateUtil.getInstance().getSessionFactory().openSession()) {
-                Transaction transaction = session.beginTransaction();
-                session.persist(client);
-                transaction.commit();
-                return client;
-            }
-        }
-        return client;
-    }
 
     @Override
     public void update(Client client) throws SQLException {
@@ -77,7 +55,7 @@ public class ClientCrudService implements IClientService{
             try(Session session = HibernateUtil.getInstance().getSessionFactory().openSession()) {
 
                 Transaction transaction = session.beginTransaction();
-                session.delete(session.get(Client.class,id));
+                session.remove(session.get(Client.class,id));
                 transaction.commit();
                 System.out.println("Client for this id = " + id+" is delete!");
             }

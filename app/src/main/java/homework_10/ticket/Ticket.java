@@ -1,9 +1,7 @@
 package homework_10.ticket;
 
 import homework_10.client.Client;
-import homework_10.client.ClientCrudService;
 import homework_10.planet.Planet;
-import homework_10.planet.PlanetCrudService;
 import jakarta.persistence.*;
 import lombok.Data;
 
@@ -23,31 +21,31 @@ public class Ticket {
     private String created_at;
     @ManyToOne
     @JoinColumn(name = "client_id", referencedColumnName = "id",nullable = false)
-    private Client client_id;
+    private Client client;
     @ManyToOne
     @JoinColumn(name = "from_planet_id", referencedColumnName = "id",nullable = false)
-    private Planet from_planet_id;
+    private Planet from_planet;
     @ManyToOne
     @JoinColumn(name = "to_planet_id", referencedColumnName = "id",nullable = false)
-    private Planet to_planet_id;
+    private Planet to_planet;
 
     public Ticket() {
     }
 
-    public Ticket( long client_id, String from_planet_id, String to_planet_id) throws SQLException {
+    public Ticket(Client client, Planet from_planet, Planet to_planet) throws SQLException {
         this.created_at = ZonedDateTime.now(ZoneId.of("UTC"))
                 .format(DateTimeFormatter
                         .ofPattern("yyyy-MM-dd HH:mm:ss"));
-        this.client_id = new ClientCrudService().readForTicket(client_id);
-        this.from_planet_id = new PlanetCrudService().read(from_planet_id);
-        this.to_planet_id = new PlanetCrudService().read(to_planet_id);
+        this.client = client;
+        this.from_planet = from_planet;
+        this.to_planet = to_planet;
     }
 
     public String toString(){
         return "ID = "+id+"; "
                 +created_at+"; "
-                +client_id.toString()+"; "
-                +from_planet_id.getId()+"; "
-                +to_planet_id.getId();
+                +client.toString()+"; "
+                +from_planet.getId()+"; "
+                +to_planet.getId();
     }
 }

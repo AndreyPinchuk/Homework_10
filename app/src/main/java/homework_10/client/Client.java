@@ -16,7 +16,8 @@ public class Client {
     @Column(length = 200)
     private String name;
 
-    @OneToMany(mappedBy = "client_id")
+
+    @OneToMany(mappedBy = "client")
     private List<Ticket> tickets;
 
     public Client() {

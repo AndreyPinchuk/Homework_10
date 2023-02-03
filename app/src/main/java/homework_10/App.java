@@ -17,52 +17,81 @@ public class App {
         ClientCrudService clientCrudService = new ClientCrudService();
         PlanetCrudService planetCrudService = new PlanetCrudService();
         TicketCrudService ticketCrudService = new TicketCrudService();
+
+        //Client
         try {
-            //Client
+            //Client create
             clientCrudService.create(new Client("Jonny"));
+            //Client read
             System.out.println(clientCrudService.read(8));
+            //Client update
             Client client = new Client("John Wick");
             client.setId(7);
             clientCrudService.update(client);
-            clientCrudService.delete(11);
-
-            System.out.println();
-
-            //Planet
-            planetCrudService.create(new Planet("PLU","Plutone"));
-            System.out.println(planetCrudService.read("SAT").toString());
-            Planet planet = new Planet("PLU","Pluto");
-            planetCrudService.update(planet);
-            planetCrudService.delete("PLU");
-
-            System.out.println();
-
-            //Ticket
-            ticketCrudService.create(new Ticket(5,"VEN","EAR"));
-            System.out.println(ticketCrudService.read(8).toString());
-            Ticket ticket = new Ticket(5,"VEN","SAT");
-            ticket.setId(5);
-            ticketCrudService.update(ticket);
-            ticketCrudService.delete(12);
-
-            System.out.println();
+            //Client delete
+            clientCrudService.delete(10);
 
         } catch (SQLException e) {
             e.printStackTrace();
         }
-
+            System.out.println();
+        //Client readAll
         List<Client> clients = clientCrudService.readAll();
         for (Client client1 : clients) {
             System.out.println(client1.toString());
         }
         System.out.println();
 
+        //Planet
+        try {
+            //Planet create
+            planetCrudService.create(new Planet("PLU","Plutone"));
+            //Planet read
+            System.out.println(planetCrudService.read("SAT").toString());
+            //Planet update
+            Planet planet = new Planet("PLU","Pluto");
+            planetCrudService.update(planet);
+            //Planet delete
+            planetCrudService.delete("PLU");
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+            System.out.println();
+        //Planet readAll
         List<Planet> planets = planetCrudService.readAll();
         for (Planet planet : planets) {
             System.out.println(planet);
         }
         System.out.println();
 
+        //Ticket
+        try {
+            //Ticket create
+            ticketCrudService.create(new Ticket(
+                    clientCrudService.read(8),
+                    planetCrudService.read("EAR"),
+                    planetCrudService.read("VEN")
+            ));
+            //Ticket read
+            System.out.println(ticketCrudService.read(8).toString());
+            //Ticket update
+            Ticket ticket = new Ticket(
+                    clientCrudService.read(5),
+                    planetCrudService.read("VEN"),
+                    planetCrudService.read("SAT")
+            );
+            ticket.setId(5);
+            ticketCrudService.update(ticket);
+            //Ticket delete
+            ticketCrudService.delete(9);
+
+            System.out.println();
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        //Ticket readAll
         List<Ticket> tickets = ticketCrudService.readAll();
         for (Ticket ticket : tickets) {
             System.out.println(ticket);
